@@ -18,6 +18,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <malloc/malloc.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -32,6 +33,21 @@
 #include "config.h"
 #include "hdfs.h"
 
+#ifdef __APPLE__
+#include <mach/mach_time.h>
+#define CLOCK_MONOTONIC 0
+int clock_gettime(int clk_id, struct timespec *t){
+    mach_timebase_info_data_t timebase;
+    mach_timebase_info(&timebase);
+    uint64_t time;
+    time = mach_absolute_time();
+    double nseconds = ((double)time * (double)timebase.numer)/((double)timebase.denom);
+    double seconds = ((double)time * (double)timebase.numer)/((double)timebase.denom * 1e9);
+    t->tv_sec = seconds;
+    t->tv_nsec = nseconds;
+    return 0;
+}
+#endif
 #define VECSUM_CHUNK_SIZE (8 * 1024 * 1024)
 #define ZCR_READ_CHUNK_SIZE (1024 * 1024 * 8)
 #define NORMAL_READ_CHUNK_SIZE (8 * 1024 * 1024)

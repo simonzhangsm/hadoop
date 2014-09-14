@@ -24,7 +24,7 @@
   <artifactId>hadoop-pipes</artifactId>
   <version>2.5.1</version>
   <description>Apache Hadoop Pipes</description>
-  <name>Apache Hadoop Pipes</name>
+  <name>hadoop-pipes</name>
   <packaging>pom</packaging>
 
   <properties>

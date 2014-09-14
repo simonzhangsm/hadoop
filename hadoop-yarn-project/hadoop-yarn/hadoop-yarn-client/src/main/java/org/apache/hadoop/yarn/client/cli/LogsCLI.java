@@ -34,6 +34,7 @@ import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
 import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.hadoop.yarn.api.records.ApplicationReport;
 import org.apache.hadoop.yarn.client.api.YarnClient;
@@ -196,8 +197,7 @@ public class LogsCLI extends Configured implements Tool {
     Configuration conf = new YarnConfiguration();
     LogsCLI logDumper = new LogsCLI();
     logDumper.setConf(conf);
-    int exitCode = logDumper.run(args);
-    System.exit(exitCode);
+    System.exit(ToolRunner.run(logDumper, args));
   }
 
   private void printHelpMessage(Options options) {

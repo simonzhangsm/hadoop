@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.metrics2.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanInfo;
@@ -90,6 +91,10 @@ class MBeanInfoBuilder implements MetricsVisitor {
     attrs.add(newAttrInfo(info, "java.lang.Long"));
   }
 
+  @Override
+  public void hashmap(MetricsInfo info, HashMap<String, Number> value) {
+  	attrs.add(newAttrInfo(info, "java.util.HashMap<String, Number>"));
+  }
   String getAttrName(String name) {
     return curRecNo > 0 ? name +"."+ curRecNo : name;
   }

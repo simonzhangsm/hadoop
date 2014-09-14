@@ -27,7 +27,7 @@
   <artifactId>hadoop-annotations</artifactId>
   <version>2.5.1</version>
   <description>Apache Hadoop Annotations</description>
-  <name>Apache Hadoop Annotations</name>
+  <name>hadoop-annotations</name>
   <packaging>jar</packaging>
 
   <dependencies>

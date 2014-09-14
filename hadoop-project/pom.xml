@@ -26,7 +26,7 @@
   <artifactId>hadoop-project</artifactId>
   <version>2.5.1</version>
   <description>Apache Hadoop Project POM</description>
-  <name>Apache Hadoop Project POM</name>
+  <name>hadoop-project</name>
   <packaging>pom</packaging>
 
   <properties>
@@ -430,7 +430,7 @@
         <artifactId>guice</artifactId>
         <version>3.0</version>
       </dependency>
-      
+
       <dependency>
         <groupId>cglib</groupId>
         <artifactId>cglib</artifactId>
@@ -807,8 +807,8 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>2.5.1</version>
           <configuration>
-            <source>1.6</source>
-            <target>1.6</target>
+            <source>1.7</source>
+            <target>1.7</target>
           </configuration>
         </plugin>
         <plugin>
@@ -889,7 +889,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>2.2</version>
+          <version>2.6</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -914,7 +914,7 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
       </plugin>
-      
+
        <plugin>
          <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
@@ -944,7 +944,7 @@
               <version>[3.0.0,)</version>
             </requireMavenVersion>
             <requireJavaVersion>
-              <version>1.6</version>
+              <version>1.7</version>
             </requireJavaVersion>
           </rules>
         </configuration>
@@ -1029,7 +1029,7 @@
             <configuration>
               <rules>
                 <DependencyConvergence>
-                  <uniqueVersions>true</uniqueVersions> 
+                  <uniqueVersions>true</uniqueVersions>
                 </DependencyConvergence>
               </rules>
             </configuration>
@@ -1108,8 +1108,8 @@
             <artifactId>maven-compiler-plugin</artifactId>
             <configuration>
               <fork>true</fork>
-              <source>1.6</source>
-              <target>1.6</target>
+              <source>1.7</source>
+              <target>1.7</target>
               <compilerArguments>
                 <Xlint/>
                 <Xmaxwarns>9999</Xmaxwarns>

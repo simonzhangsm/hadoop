@@ -31,8 +31,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <libgen.h>
+#include <sys/param.h>
 #include <sys/stat.h>
 #include <sys/mount.h>
+#include <sys/resource.h>
 
 static const int DEFAULT_MIN_USERID = 1000;
 
@@ -366,37 +369,28 @@ char *get_tmp_directory(const char *work_dir) {
  * with the desired permissions.
  */
 int mkdirs(const char* path, mode_t perm) {
-  char *buffer = strdup(path);
-  char *token;
-  int cwd = open("/", O_RDONLY);
-  if (cwd == -1) {
-    fprintf(LOGFILE, "Can't open / in %s - %s\n", path, strerror(errno));
-    free(buffer);
-    return -1;
-  }
-  for(token = strtok(buffer, "/"); token != NULL; token = strtok(NULL, "/")) {
-    if (mkdirat(cwd, token, perm) != 0) {
-      if (errno != EEXIST) {
-        fprintf(LOGFILE, "Can't create directory %s in %s - %s\n", 
-                token, path, strerror(errno));
-        close(cwd);
-        free(buffer);
+    struct stat sb;
+    if (stat(path, &sb) == 0) {
+        if (S_ISDIR (sb.st_mode)) {
+            return 0;
+        }else{
+            fprintf(LOGFILE, "Path %s is not an existed dir\n", path);
         return -1;
       }
     }
-    int new_dir = openat(cwd, token, O_RDONLY);
-    close(cwd);
-    cwd = new_dir;
-    if (cwd == -1) {
-      fprintf(LOGFILE, "Can't open %s in %s - %s\n", token, path, 
-              strerror(errno));
-      free(buffer);
+    else if (errno != ENOENT) {
+        fprintf(LOGFILE, "Can't access to directory %s - %s.\n", path, strerror(errno));
       return -1;
     }
-  }
-  free(buffer);
-  close(cwd);
+    char npath[PATH_MAX];
+    memset(npath, 0x00, sizeof(npath));
+    strcpy(npath, path);
+    strcpy(npath, dirname(npath));
+
+	if(mkdirs(npath, perm) == 0 && mkdir(path, perm) == 0)
   return 0;
+    fprintf(LOGFILE, "Can't create directory %s - %s.\n", path, strerror(errno));
+    return -1;
 }
 
 /**
@@ -1252,6 +1246,10 @@ void chown_dir_contents(const char *dir_path, uid_t uid, gid_t gid) {
  * hierarchy: the top directory of the hierarchy for the NM
  */
 int mount_cgroup(const char *pair, const char *hierarchy) {
+#if defined __FreeBSD__ || defined __APPLE__
+  fprintf(LOGFILE, "Failed to mount cgroup controller, not support\n");
+  return -1;
+#else
   char *controller = malloc(strlen(pair));
   char *mount_path = malloc(strlen(pair));
   char hier_path[PATH_MAX];
@@ -1263,7 +1261,11 @@ int mount_cgroup(const char *pair, const char *hierarchy) {
               pair);
     result = -1; 
   } else {
+#ifdef __APPLE__
+    if (mount("cgroup", mount_path, 0, controller) == 0) {
+#else
     if (mount("none", mount_path, "cgroup", 0, controller) == 0) {
+#endif
       char *buf = stpncpy(hier_path, mount_path, strlen(mount_path));
       *buf++ = '/';
       snprintf(buf, PATH_MAX - (buf - hier_path), "%s", hierarchy);
@@ -1288,5 +1290,6 @@ int mount_cgroup(const char *pair, const char *hierarchy) {
   free(mount_path);
 
   return result;
+#endif
 }
 

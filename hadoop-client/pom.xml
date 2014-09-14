@@ -27,7 +27,7 @@
   <packaging>jar</packaging>
 
   <description>Apache Hadoop Client</description>
-  <name>Apache Hadoop Client</name>
+  <name>hadoop-client</name>
 
 <properties>
    <hadoop.component>client</hadoop.component>

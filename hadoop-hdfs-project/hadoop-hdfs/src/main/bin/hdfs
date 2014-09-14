@@ -33,6 +33,26 @@ DEFAULT_LIBEXEC_DIR="$bin"/../libexec
 HADOOP_LIBEXEC_DIR=${HADOOP_LIBEXEC_DIR:-$DEFAULT_LIBEXEC_DIR}
 . $HADOOP_LIBEXEC_DIR/hdfs-config.sh
 
+function choose_debug_port(){
+  debug_port_base=11000
+  while [ -z "$DEBUG_PORT" ]
+  do
+     if [ "$(netstat -tln | grep $debug_port_base |wc -l)" -eq 0 ]
+     then
+        DEBUG_PORT=$debug_port_base
+     else
+        debug_port_base=$(($debug_port_base+1))
+     fi
+  done
+}
+debug_file="$bin/../etc/hadoop/hadoop.debug"
+choose_debug_port
+function is_debug_enabled(){
+  if [ -f "$debug_file" ] && [ -n "$DEBUG_PORT" ]; then
+     echo $(cat $debug_file | grep $1)
+  fi
+}
+
 function print_usage(){
   echo "Usage: hdfs [--config confdir] COMMAND"
   echo "       where COMMAND is one of:"
@@ -191,6 +211,12 @@ fi
 export CLASSPATH=$CLASSPATH
 
 HADOOP_OPTS="$HADOOP_OPTS -Dhadoop.security.logger=${HADOOP_SECURITY_LOGGER:-INFO,NullAppender}"
+
+if [ $(is_debug_enabled $COMMAND) ]
+then
+   echo "debug for $COMMAND is enabled, port:$DEBUG_PORT"
+   export HADOOP_OPTS="$HADOOP_OPTS -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=$DEBUG_PORT,suspend=y,server=y "
+fi
 
 # Check to see if we should start a secure datanode
 if [ "$starting_secure_dn" = "true" ]; then

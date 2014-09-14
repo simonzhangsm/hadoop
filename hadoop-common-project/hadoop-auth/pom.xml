@@ -28,7 +28,7 @@
   <version>2.5.1</version>
   <packaging>jar</packaging>
 
-  <name>Apache Hadoop Auth</name>
+  <name>hadoop-auth</name>
   <description>Apache Hadoop Auth - Java HTTP SPNEGO</description>
 
   <properties>

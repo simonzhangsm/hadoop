@@ -29,6 +29,7 @@ import org.apache.hadoop.metrics2.annotation.Metrics;
 import org.apache.hadoop.metrics2.lib.DefaultMetricsSystem;
 import org.apache.hadoop.metrics2.lib.MetricsRegistry;
 import org.apache.hadoop.metrics2.lib.MutableCounterLong;
+import org.apache.hadoop.metrics2.lib.MutableHashMap;
 import org.apache.hadoop.metrics2.lib.MutableQuantiles;
 import org.apache.hadoop.metrics2.lib.MutableRate;
 import org.apache.hadoop.metrics2.source.JvmMetrics;
@@ -90,6 +91,8 @@ public class DataNodeMetrics {
   final MutableQuantiles[] sendDataPacketBlockedOnNetworkNanosQuantiles;
   @Metric MutableRate sendDataPacketTransferNanos;
   final MutableQuantiles[] sendDataPacketTransferNanosQuantiles;
+  @Metric("HashMap Metric")
+  MutableHashMap dataHashMap;
 
   final MetricsRegistry registry = new MetricsRegistry("datanode");
   final String name;
@@ -221,8 +224,12 @@ public class DataNodeMetrics {
     bytesRead.incr(delta);
   }
 
-  public void incrBlocksRead() {
+  public void incrBlocksRead(String key) {
     blocksRead.incr();
+    incrBlocksReadRecord(key);
+  }
+  public void incrBlocksReadRecord(String key) {
+    dataHashMap.put(key);
   }
 
   public void incrFsyncCount() {
@@ -267,8 +274,9 @@ public class DataNodeMetrics {
   }
 
   /** Increment for getBlockLocalPathInfo calls */
-  public void incrBlocksGetLocalPathInfo() {
+  public void incrBlocksGetLocalPathInfo(String key) {
     blocksGetLocalPathInfo.incr();
+    incrBlocksReadRecord(key);
   }
 
   public void addSendDataPacketBlockedOnNetworkNanos(long latencyNanos) {

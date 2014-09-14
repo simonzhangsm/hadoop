@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.metrics2.sink.ganglia;
 
+import java.util.HashMap;
 import org.apache.hadoop.metrics2.MetricsInfo;
 import org.apache.hadoop.metrics2.MetricsVisitor;
 import org.apache.hadoop.metrics2.sink.ganglia.AbstractGangliaSink.GangliaSlope;
@@ -30,6 +31,7 @@ class GangliaMetricVisitor implements MetricsVisitor {
   private static final String INT32 = "int32";
   private static final String FLOAT = "float";
   private static final String DOUBLE = "double";
+  private static final String HASHMAP = "hashmap";
 
   private String type;
   private GangliaSlope slope;
@@ -91,5 +93,11 @@ class GangliaMetricVisitor implements MetricsVisitor {
     type = FLOAT;
     // counters have positive slope
     slope = GangliaSlope.positive;
+  }
+  @Override
+  public void hashmap(MetricsInfo info, HashMap<String, Number> value) {
+    // TODO Auto-generated method stub
+    type = HASHMAP; // MetricHashMap.class ==> "hashmap"
+    slope = null;// set to null as cannot figure out from Metric
   }
 }

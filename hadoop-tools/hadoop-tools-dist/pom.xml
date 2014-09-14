@@ -27,7 +27,7 @@
   <artifactId>hadoop-tools-dist</artifactId>
   <version>2.5.1</version>
   <description>Apache Hadoop Tools Dist</description>
-  <name>Apache Hadoop Tools Dist</name>
+  <name>hadoop-tools-dist</name>
   <packaging>jar</packaging>
 
   <properties>

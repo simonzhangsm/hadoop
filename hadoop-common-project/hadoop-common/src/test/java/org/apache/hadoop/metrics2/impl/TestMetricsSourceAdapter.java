@@ -53,7 +53,7 @@ public class TestMetricsSourceAdapter {
     // Validate getMetrics and JMX initial values
     MetricsRecordImpl metricsRecord = metricsRecords.iterator().next();
     assertEquals(0L,
-        metricsRecord.metrics().iterator().next().value().longValue());
+        ((Number)metricsRecord.metrics().iterator().next().value()).longValue());
 
     Thread.sleep(100); // skip JMX cache TTL
     assertEquals(0L, (Number)sa.getAttribute("C1"));

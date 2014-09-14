@@ -20,7 +20,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
   <artifactId>hadoop-main</artifactId>
   <version>2.5.1</version>
   <description>Apache Hadoop Main</description>
-  <name>Apache Hadoop Main</name>
+  <name>hadoop-main</name>
   <packaging>pom</packaging>
 
   <dependencyManagement>
@@ -89,6 +89,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     <!-- platform encoding override -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <javaVersion>1.7</javaVersion>
+    <targetJavaVersion>1.7</targetJavaVersion>
   </properties>
 
   <modules>
@@ -124,7 +126,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
                 <version>[3.0.2,)</version>
               </requireMavenVersion>
               <requireJavaVersion>
-                <version>1.6</version>
+                <version>1.7</version>
               </requireJavaVersion>
             </rules>
           </configuration>
@@ -184,6 +186,16 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
         <inherited>false</inherited>
+        <configuration>
+          <rules>
+            <requireMavenVersion>
+              <version>[3.0.2,)</version>
+            </requireMavenVersion>
+            <requireJavaVersion>
+              <version>[${javaVersion}.0,${javaVersion}.1000}]</version>
+            </requireJavaVersion>
+          </rules>
+        </configuration>
         <executions>
           <execution>
             <id>clean</id>

@@ -27,7 +27,7 @@
   <artifactId>hadoop-extras</artifactId>
   <version>2.5.1</version>
   <description>Apache Hadoop Extras</description>
-  <name>Apache Hadoop Extras</name>
+  <name>hadoop-extras</name>
   <packaging>jar</packaging>
 
   <properties>

@@ -21,10 +21,11 @@ export YARN_CONF_DIR="${YARN_CONF_DIR:-$HADOOP_YARN_HOME/conf}"
 
 # some Java parameters
 # export JAVA_HOME=/home/y/libexec/jdk1.6.0/
-if [ "$JAVA_HOME" != "" ]; then
-  #echo "run java in $JAVA_HOME"
-  JAVA_HOME=$JAVA_HOME
-fi
+export JAVA_HOME=`/usr/libexec/java_home -v 1.7` #${JAVA_HOME}
+# if [ "$JAVA_HOME" != "" ]; then
+#   #echo "run java in $JAVA_HOME"
+#   JAVA_HOME=$JAVA_HOME
+# fi
   
 if [ "$JAVA_HOME" = "" ]; then
   echo "Error: JAVA_HOME is not set."

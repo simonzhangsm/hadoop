@@ -27,7 +27,7 @@
   <artifactId>hadoop-mapreduce-examples</artifactId>
   <version>2.5.1</version>
   <description>Apache Hadoop MapReduce Examples</description>
-  <name>Apache Hadoop MapReduce Examples</name>
+  <name>hadoop-mapreduce-examples</name>
   <packaging>jar</packaging>
 
   <properties>

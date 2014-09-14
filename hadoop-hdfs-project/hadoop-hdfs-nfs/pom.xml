@@ -27,7 +27,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <artifactId>hadoop-hdfs-nfs</artifactId>
   <version>2.5.1</version>
   <description>Apache Hadoop HDFS-NFS</description>
-  <name>Apache Hadoop HDFS-NFS</name>
+  <name>hadoop-hdfs-nfs</name>
   <packaging>jar</packaging>
 
   <dependencies>

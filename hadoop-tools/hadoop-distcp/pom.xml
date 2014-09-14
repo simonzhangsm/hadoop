@@ -27,7 +27,7 @@
   <artifactId>hadoop-distcp</artifactId>
   <version>2.5.1</version>
   <description>Apache Hadoop Distributed Copy</description>
-  <name>Apache Hadoop Distributed Copy</name>
+  <name>hadoop-distcp</name>
   <packaging>jar</packaging>
 
   <properties>

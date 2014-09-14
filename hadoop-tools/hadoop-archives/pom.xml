@@ -27,7 +27,7 @@
   <artifactId>hadoop-archives</artifactId>
   <version>2.5.1</version>
   <description>Apache Hadoop Archives</description>
-  <name>Apache Hadoop Archives</name>
+  <name>hadoop-archives</name>
   <packaging>jar</packaging>
 
   <properties>

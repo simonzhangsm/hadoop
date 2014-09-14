@@ -17,4 +17,10 @@
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
+
+	<property>
+        <name>fs.default.name</name>
+        <value>hdfs://127.0.0.1:9000</value>
+    </property>
+
 </configuration>

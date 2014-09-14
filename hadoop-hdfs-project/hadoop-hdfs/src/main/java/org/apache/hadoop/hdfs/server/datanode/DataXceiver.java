@@ -527,14 +527,14 @@ class DataXceiver extends Receiver implements Runnable {
         IOUtils.closeStream(out);
       }
       datanode.metrics.incrBytesRead((int) read);
-      datanode.metrics.incrBlocksRead();
+      datanode.metrics.incrBlocksRead(clientName+":"+localAddress+":"+remoteAddress+":["+block.getBlockId()+":"+block.getBlockName()+"]");
     } catch ( SocketException ignored ) {
       if (LOG.isTraceEnabled()) {
         LOG.trace(dnR + ":Ignoring exception while serving " + block + " to " +
             remoteAddress, ignored);
       }
       // Its ok for remote side to close the connection anytime.
-      datanode.metrics.incrBlocksRead();
+      datanode.metrics.incrBlocksRead(clientName+":"+localAddress+":"+remoteAddress+":["+block.getBlockId()+":"+block.getBlockName()+"]");
       IOUtils.closeStream(out);
     } catch ( IOException ioe ) {
       /* What exactly should we do here?
@@ -950,7 +950,7 @@ class DataXceiver extends Receiver implements Runnable {
                                         dataXceiverServer.balanceThrottler);
 
       datanode.metrics.incrBytesRead((int) read);
-      datanode.metrics.incrBlocksRead();
+      datanode.metrics.incrBlocksRead("copyBlock:"+localAddress+":"+remoteAddress+":["+block.getBlockId()+":"+block.getBlockName()+"]");
       
       LOG.info("Copied " + block + " to " + peer.getRemoteAddressString());
     } catch (IOException ioe) {

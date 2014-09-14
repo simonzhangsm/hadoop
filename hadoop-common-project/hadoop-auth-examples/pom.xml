@@ -28,7 +28,7 @@
   <version>2.5.1</version>
   <packaging>war</packaging>
 
-  <name>Apache Hadoop Auth Examples</name>
+  <name>hadoop-auth-examples</name>
   <description>Apache Hadoop Auth Examples - Java HTTP SPNEGO</description>
 
   <dependencies>
@@ -65,6 +65,7 @@
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <warName>hadoop-auth-examples</warName>
+          <version>3.1</version>
         </configuration>
       </plugin>
       <plugin>

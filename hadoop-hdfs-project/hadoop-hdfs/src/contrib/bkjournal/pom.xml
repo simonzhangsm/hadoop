@@ -28,7 +28,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <artifactId>hadoop-hdfs-bkjournal</artifactId>
   <version>2.5.1</version>
   <description>Apache Hadoop HDFS BookKeeper Journal</description>
-  <name>Apache Hadoop HDFS BookKeeper Journal</name>
+  <name>hadoop-hdfs-bkjournal</name>
   <packaging>jar</packaging>
 
   <properties>

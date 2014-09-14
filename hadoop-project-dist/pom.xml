@@ -27,7 +27,7 @@
   <artifactId>hadoop-project-dist</artifactId>
   <version>2.5.1</version>
   <description>Apache Hadoop Project Dist POM</description>
-  <name>Apache Hadoop Project Dist POM</name>
+  <name>hadoop-project-dist</name>
   <packaging>pom</packaging>
 
   <properties>

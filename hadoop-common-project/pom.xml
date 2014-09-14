@@ -27,7 +27,7 @@
   <artifactId>hadoop-common-project</artifactId>
   <version>2.5.1</version>
   <description>Apache Hadoop Common Project</description>
-  <name>Apache Hadoop Common Project</name>
+  <name>hadoop-common-project</name>
   <packaging>pom</packaging>
 
   <modules>

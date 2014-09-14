@@ -27,7 +27,7 @@
   <artifactId>hadoop-tools</artifactId>
   <version>2.5.1</version>
   <description>Apache Hadoop Tools</description>
-  <name>Apache Hadoop Tools</name>
+  <name>hadoop-tools</name>
   <packaging>pom</packaging>
 
   <modules>

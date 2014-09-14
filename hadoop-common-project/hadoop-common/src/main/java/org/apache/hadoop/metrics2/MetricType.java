@@ -27,5 +27,9 @@ public enum MetricType {
   /**
    * An arbitrary varying metric
    */
-  GAUGE
+  GAUGE,
+  /**
+   * An hashmap record for key and value
+   */
+  HASHMAP
 }

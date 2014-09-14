@@ -222,10 +222,12 @@ void test_check_user() {
     printf("FAIL: failed check for system user root\n");
     exit(1);
   }
+#ifndef __APPLE__ //macosx do not have user bin
   if (check_user("bin") == NULL) {
     printf("FAIL: failed check for whitelisted system user bin\n");
     exit(1);
   }
+#endif
 }
 
 void test_resolve_config_path() {

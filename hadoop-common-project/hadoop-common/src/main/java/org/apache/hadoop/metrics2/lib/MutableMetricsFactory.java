@@ -60,6 +60,9 @@ public class MutableMetricsFactory {
     if (cls == MutableGaugeLong.class) {
       return registry.newGauge(info, 0L);
     }
+    if (cls == MutableHashMap.class) {
+      return registry.newHashMap(info);
+    }
     if (cls == MutableRate.class) {
       return registry.newRate(info.name(), info.description(),
                               annotation.always());

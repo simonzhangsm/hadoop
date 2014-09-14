@@ -53,10 +53,10 @@
         <include>*.cmd</include>
       </includes>
       <excludes>
-        <exclude>hadoop-config.sh</exclude>
+        <!-- exclude>hadoop-config.sh</exclude -->
         <exclude>hadoop.cmd</exclude>
         <exclude>hdfs.cmd</exclude>
-        <exclude>hadoop-config.cmd</exclude>
+        <!-- exclude>hadoop-config.cmd</exclude -->
       </excludes>
       <fileMode>0755</fileMode>
     </fileSet>

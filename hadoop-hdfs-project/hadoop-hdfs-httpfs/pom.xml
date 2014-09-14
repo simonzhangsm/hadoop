@@ -30,7 +30,7 @@
   <version>2.5.1</version>
   <packaging>war</packaging>
 
-  <name>Apache Hadoop HttpFS</name>
+  <name>hadoop-hdfs-httpfs</name>
   <description>Apache Hadoop HttpFS</description>
 
   <properties>
@@ -416,6 +416,9 @@
             </configuration>
           </execution>
         </executions>
+        <configuration>
+        	<version>3.1</version>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>

@@ -266,7 +266,7 @@ public class TestMetricsSystemImpl {
         ArrayList<String> names = new ArrayList<String>();
         for (AbstractMetric m : record.metrics()) {
           if (m.name().equalsIgnoreCase("g1")) {
-            collected[recordNumber].set(m.value().longValue());
+            collected[recordNumber].set(((Number)m.value()).longValue());
             return;
           }
           names.add(m.name());

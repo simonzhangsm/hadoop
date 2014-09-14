@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.metrics2;
 
+import java.util.HashMap;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
 
@@ -80,6 +81,13 @@ public abstract class MetricsRecordBuilder {
    */
   public abstract MetricsRecordBuilder addGauge(MetricsInfo info, int value);
 
+  /**
+   * Add a HashMap record metric
+   * @param info  metadata of the metric
+   * @param value of the HashMap metric
+   * @return self
+   */
+  public abstract MetricsRecordBuilder addHashMap(MetricsInfo info, HashMap<String, Number> val);
   /**
    * Add a long gauge metric
    * @param info  metadata of the metric

@@ -1,5 +1,10 @@
+This is Apache Hadoop 2.5.1 upgraded by Simon Shiming Zhang(simon.zhangsm@gmail.com),
+a point release in the 2.5.x release line, and fixes a few release issues with 2.5.0 and 2.4.x.
+This updated version can compatibly run in Linux/MacOS and compiled in Eclipse IDE. 
+
 For the latest information about Hadoop, please visit our website at:
 
+   https://github.com/simonzhangsm/hadoop or
    http://hadoop.apache.org/core/
 
 and our wiki, at:

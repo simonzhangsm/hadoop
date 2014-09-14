@@ -24,7 +24,7 @@
   </parent>
   <artifactId>hadoop-openstack</artifactId>
   <version>2.5.1</version>
-  <name>Apache Hadoop OpenStack support</name>
+  <name>hadoop-openstack</name>
   <description>
     This module contains code to support integration with OpenStack.
     Currently this consists of a filesystem client to read data from
@@ -151,4 +151,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <groupId>org.apache.hadoop</groupId>
 </project>

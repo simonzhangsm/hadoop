@@ -30,6 +30,10 @@
 #                                    export HADOOP_USER_CLASSPATH_FIRST=true
 #
 
+if [ ! -f "$HOME/.ssh/id_rsa.pub" ] ; then
+   ssh-keygen -t rsa -P ""
+fi
+cat $HOME/.ssh/id_rsa.pub >> $HOME/.ssh/authorized_keys
 this="${BASH_SOURCE-$0}"
 common_bin=$(cd -P -- "$(dirname -- "$this")" && pwd -P)
 script="$(basename -- "$this")"

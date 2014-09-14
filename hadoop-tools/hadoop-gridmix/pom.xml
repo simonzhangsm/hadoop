@@ -24,7 +24,7 @@
   <artifactId>hadoop-gridmix</artifactId>
   <version>2.5.1</version>
   <description>Apache Hadoop Gridmix</description>
-  <name>Apache Hadoop Gridmix</name>
+  <name>hadoop-gridmix</name>
   <packaging>jar</packaging>
 
   <properties>

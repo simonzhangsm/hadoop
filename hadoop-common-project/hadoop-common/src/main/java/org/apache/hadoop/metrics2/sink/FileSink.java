@@ -62,7 +62,7 @@ public class FileSink implements MetricsSink, Closeable {
     writer.print(record.context());
     writer.print(".");
     writer.print(record.name());
-    String separator = ": ";
+    String separator = ": Tags[";
     for (MetricsTag tag : record.tags()) {
       writer.print(separator);
       separator = ", ";
@@ -70,6 +70,7 @@ public class FileSink implements MetricsSink, Closeable {
       writer.print("=");
       writer.print(tag.value());
     }
+    separator = "] : Metrics[";
     for (AbstractMetric metric : record.metrics()) {
       writer.print(separator);
       separator = ", ";
@@ -77,6 +78,7 @@ public class FileSink implements MetricsSink, Closeable {
       writer.print("=");
       writer.print(metric.value());
     }
+    writer.print("]");
     writer.println();
   }
 

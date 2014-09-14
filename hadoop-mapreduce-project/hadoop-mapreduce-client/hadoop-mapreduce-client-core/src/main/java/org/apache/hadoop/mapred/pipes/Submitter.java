@@ -61,6 +61,7 @@ import org.apache.hadoop.mapreduce.filecache.DistributedCache;
 import org.apache.hadoop.util.ExitUtil;
 import org.apache.hadoop.util.GenericOptionsParser;
 import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
 
 /**
  * The main entry point and job submitter. It may either be used as a command
@@ -515,8 +516,7 @@ public class Submitter extends Configured implements Tool {
    * @param args
    */
   public static void main(String[] args) throws Exception {
-    int exitCode =  new Submitter().run(args);
-    ExitUtil.terminate(exitCode);
+    ExitUtil.terminate(ToolRunner.run(new Submitter(), args));
   }
 
 }

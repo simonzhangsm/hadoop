@@ -27,7 +27,7 @@
   <artifactId>hadoop-common</artifactId>
   <version>2.5.1</version>
   <description>Apache Hadoop Common</description>
-  <name>Apache Hadoop Common</name>
+  <name>hadoop-common</name>
   <packaging>jar</packaging>
 
   <properties>

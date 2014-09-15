@@ -18,11 +18,10 @@
 
 package org.apache.hadoop.metrics2.sink;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 
 import org.apache.commons.configuration.SubsetConfiguration;
 import org.apache.hadoop.classification.InterfaceAudience;
@@ -32,63 +31,60 @@ import org.apache.hadoop.metrics2.MetricsException;
 import org.apache.hadoop.metrics2.MetricsRecord;
 import org.apache.hadoop.metrics2.MetricsSink;
 import org.apache.hadoop.metrics2.MetricsTag;
+import org.apache.hadoop.metrics2.impl.MetricHashMap;
 
 /**
  * A metrics sink that writes to a file
  */
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
-public class FileSink implements MetricsSink, Closeable {
-  private static final String FILENAME_KEY = "filename";
-  private PrintWriter writer;
+public class FileSinkHashMap implements MetricsSink {
+	private static final String FILENAME_KEY = "filename";
+	private PrintWriter writer;
 
-  @Override
-  public void init(SubsetConfiguration conf) {
-    String filename = conf.getString(FILENAME_KEY);
-    try {
-      writer = filename == null
-          ? new PrintWriter(System.out)
-          : new PrintWriter(new FileWriter(new File(filename), true));
-    }
-    catch (Exception e) {
-      throw new MetricsException("Error creating "+ filename, e);
-    }
-  }
+	@Override
+	public void init(SubsetConfiguration conf) {
+		String filename = conf.getString(FILENAME_KEY);
+		try {
+			writer = filename == null ? new PrintWriter(System.out)
+					: new PrintWriter(new FileWriter(new File(filename), true));
+		} catch (Exception e) {
+			throw new MetricsException("Error creating " + filename, e);
+		}
+	}
 
-  @Override
-  public void putMetrics(MetricsRecord record) {
-    writer.print(record.timestamp());
-    writer.print(" ");
-    writer.print(record.context());
-    writer.print(".");
-    writer.print(record.name());
-    String separator = ":Tags[";
-    for (MetricsTag tag : record.tags()) {
-      writer.print(separator);
-      separator = ", ";
-      writer.print(tag.name());
-      writer.print("=");
-      writer.print(tag.value());
-    }
-    separator = "]:Metrics[";
-    for (AbstractMetric metric : record.metrics()) {
-      writer.print(separator);
-      separator = ", ";
-      writer.print(metric.name());
-      writer.print("=");
-      writer.print(metric.value());
-    }
-    writer.print("]");
-    writer.println();
-  }
+	@Override
+	public void putMetrics(MetricsRecord record) {
+		for (AbstractMetric metric : record.metrics()) {
+			if (metric instanceof MetricHashMap
+					&& !((HashMap<String, Number>) metric.value()).isEmpty()) {
+				writer.print(record.timestamp());
+				writer.print(" ");
+				writer.print(record.context());
+				writer.print(".");
+				writer.print(record.name());
+				String separator = ": Tags[";
+				for (MetricsTag tag : record.tags()) {
+					writer.print(separator);
+					separator = ", ";
+					writer.print(tag.name());
+					writer.print("=");
+					writer.print(tag.value());
+				}
+				writer.print("] : Metrics[");
 
-  @Override
-  public void flush() {
-    writer.flush();
-  }
+				writer.print(metric.name());
+				writer.print("=");
+				writer.print(metric.value());
 
-  @Override
-  public void close() throws IOException {
-    writer.close();
-  }
+				writer.print("]");
+				writer.println();
+			}
+		}
+	}
+
+	@Override
+	public void flush() {
+		writer.flush();
+	}
 }

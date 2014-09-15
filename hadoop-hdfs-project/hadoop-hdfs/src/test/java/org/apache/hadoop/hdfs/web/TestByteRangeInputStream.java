@@ -17,6 +17,8 @@
  */
 package org.apache.hadoop.hdfs.web;
 
+import javax.servlet.http.HttpServletResponse;
+import org.apache.hadoop.hdfs.web.HftpFileSystem.RangeHeaderInputStream;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -34,7 +36,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.apache.hadoop.hdfs.server.namenode.StreamFile;
-import org.apache.hadoop.hdfs.web.HftpFileSystem;
+//import org.apache.hadoop.hdfs.web.HftpFileSystem;
 import org.junit.Test;
 
 public class TestByteRangeInputStream {
@@ -78,9 +80,9 @@ public static class MockHttpURLConnection extends HttpURLConnection {
       return responseCode;
     } else {
       if (getRequestProperty("Range") == null) {
-        return 200;
+    	  return HttpServletResponse.SC_OK;
       } else {
-        return 206;
+    	  return HttpServletResponse.SC_PARTIAL_CONTENT;
       }
     }
   }
@@ -94,6 +96,19 @@ public static class MockHttpURLConnection extends HttpURLConnection {
     return (field.equalsIgnoreCase(StreamFile.CONTENT_LENGTH)) ? "65535" : null;
   }
 }
+
+  public static class MockHttpUrlConnection2 extends MockHttpURLConnection {
+    final InputStream mockInputStream;
+    public MockHttpUrlConnection2(URL u, InputStream mockInputStream) {
+      super(u);
+      this.mockInputStream = mockInputStream;
+    }
+
+    @Override
+    public InputStream getInputStream() {
+      return mockInputStream;
+    }
+  }
 
   @Test
   public void testByteRange() throws IOException {
@@ -157,11 +172,11 @@ public static class MockHttpURLConnection extends HttpURLConnection {
       fail("Exception should be thrown when 200 response is given "
            + "but 206 is expected");
     } catch (IOException e) {
-      assertEquals("Should fail because incorrect response code was sent",
-                   "HTTP_PARTIAL expected, received 200", e.getMessage());
+    	final String expected = String.format(HftpFileSystem.CLIENT_ERROR_FORMAT, rspy.getURL().getPath(), "HTTP_PARTIAL", HttpServletResponse.SC_OK);
+    	assertTrue("Should fail because incorrect response code was sent", e.toString().contains(expected));
     }
 
-    ((MockHttpURLConnection) rspy.openConnection()).setResponseCode(206);
+    ((MockHttpURLConnection) rspy.openConnection()).setResponseCode(HttpServletResponse.SC_PARTIAL_CONTENT);
     is.seek(0);
 
     try {
@@ -169,31 +184,29 @@ public static class MockHttpURLConnection extends HttpURLConnection {
       fail("Exception should be thrown when 206 response is given "
            + "but 200 is expected");
     } catch (IOException e) {
-      assertEquals("Should fail because incorrect response code was sent",
-                   "HTTP_OK expected, received 206", e.getMessage());
+    	final String expected = String.format(HftpFileSystem.CLIENT_ERROR_FORMAT, rspy.getURL().getPath(), "HTTP_OK", HttpServletResponse.SC_PARTIAL_CONTENT);
+    	assertTrue("Should fail because incorrect response code was sent", e.toString().contains(expected));
     }
     is.close();
   }
 
   @Test
   public void testPropagatedClose() throws IOException {
-    URLConnectionFactory factory = mock(URLConnectionFactory.class);
+	  final URLConnectionFactory factory = mock(URLConnectionFactory.class);
+      final InputStream mockStream = mock(InputStream.class);
+      final HftpFileSystem.RangeHeaderUrlOpener ospy = spy(new HftpFileSystem.RangeHeaderUrlOpener(factory, new URL("http://test/")));
+	  doReturn(new MockHttpUrlConnection2(ospy.getURL(), mockStream)).when(ospy).openConnection();
+      final HftpFileSystem.RangeHeaderUrlOpener rspy = spy(new HftpFileSystem.RangeHeaderUrlOpener(factory, null));
+      doReturn(new MockHttpUrlConnection2(rspy.getURL(), mockStream)).when(rspy).openConnection();
 
-    ByteRangeInputStream brs = spy(new HftpFileSystem.RangeHeaderInputStream(
-        factory, new URL("http://test/")));
+      final ByteRangeInputStream brs = spy(new RangeHeaderInputStream(ospy, rspy));
 
-    InputStream mockStream = mock(InputStream.class);
-    doReturn(mockStream).when(brs).openInputStream();
+      verify(ospy, times(1)).openConnection();
+      verify(rspy, times(0)).openConnection();
 
     int brisOpens = 0;
     int brisCloses = 0;
     int isCloses = 0;
-
-    // first open, shouldn't close underlying stream
-    brs.getInputStream();
-    verify(brs, times(++brisOpens)).openInputStream();
-    verify(brs, times(brisCloses)).close();
-    verify(mockStream, times(isCloses)).close();
 
     // stream is open, shouldn't close underlying stream
     brs.getInputStream();
@@ -204,6 +217,7 @@ public static class MockHttpURLConnection extends HttpURLConnection {
     // seek forces a reopen, should close underlying stream
     brs.seek(1);
     brs.getInputStream();
+    verify(rspy, times(1)).openConnection();
     verify(brs, times(++brisOpens)).openInputStream();
     verify(brs, times(brisCloses)).close();
     verify(mockStream, times(++isCloses)).close();

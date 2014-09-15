@@ -18,17 +18,18 @@
 package org.apache.hadoop.hdfs.web.resources;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.fs.UnresolvedLinkException;
 import org.apache.hadoop.hdfs.web.JsonUtil;
 import org.apache.hadoop.ipc.RemoteException;
 import org.apache.hadoop.ipc.StandbyException;
@@ -45,7 +46,7 @@ public class ExceptionHandler implements ExceptionMapper<Exception> {
   public static final Log LOG = LogFactory.getLog(ExceptionHandler.class);
 
   private static Exception toCause(Exception e) {
-    final Throwable t = e.getCause();    
+    final Throwable t = e.getCause();
     if (e instanceof SecurityException) {
       // For the issue reported in HDFS-6475, if SecurityException's cause
       // is InvalidToken, and the InvalidToken's cause is StandbyException,
@@ -93,30 +94,37 @@ public class ExceptionHandler implements ExceptionMapper<Exception> {
     if (e instanceof SecurityException) {
       e = toCause(e);
     }
-    
-    //Map response status
-    final Response.Status s;
-    if (e instanceof SecurityException) {
-      s = Response.Status.FORBIDDEN;
-    } else if (e instanceof AuthorizationException) {
-      s = Response.Status.FORBIDDEN;
-    } else if (e instanceof FileNotFoundException) {
-      s = Response.Status.NOT_FOUND;
-    } else if (e instanceof IOException) {
-      s = Response.Status.FORBIDDEN;
-    } else if (e instanceof UnsupportedOperationException) {
-      s = Response.Status.BAD_REQUEST;
-    } else if (e instanceof IllegalArgumentException) {
-      s = Response.Status.BAD_REQUEST;
-    } else {
-      LOG.warn("INTERNAL_SERVER_ERROR", e);
-      s = Response.Status.INTERNAL_SERVER_ERROR;
-    }
- 
+
+    final Status s = Status.fromStatusCode(toHttpStatus(e));
     final String js = JsonUtil.toJsonString(e);
     return Response.status(s).type(MediaType.APPLICATION_JSON).entity(js).build();
   }
-  
+
+  public static int toHttpStatus(Exception e) {
+    //Map response status
+    final int s;
+    if (e instanceof SecurityException) {
+    	s = HttpServletResponse.SC_FORBIDDEN;
+    } else if (e instanceof AuthorizationException) {
+    	s = HttpServletResponse.SC_FORBIDDEN;
+    } else if (e instanceof FileNotFoundException) {
+    	s = HttpServletResponse.SC_NOT_FOUND;
+    } else if (e instanceof UnresolvedLinkException) {
+        s = HttpServletResponse.SC_GONE;
+    } else if (e instanceof UnsupportedOperationException) {
+    	s = HttpServletResponse.SC_NOT_IMPLEMENTED;
+    } else if (e instanceof IllegalArgumentException) {
+    	s = HttpServletResponse.SC_BAD_REQUEST;
+    } else if (e instanceof InterruptedException) {
+        s = HttpServletResponse.SC_REQUEST_TIMEOUT;
+    } else {
+      LOG.warn("INTERNAL_SERVER_ERROR", e);
+      s = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+    }
+
+    return s;
+  }
+
   @VisibleForTesting
   public void initResponse(HttpServletResponse response) {
     this.response = response;

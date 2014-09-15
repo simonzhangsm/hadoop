@@ -54,7 +54,7 @@ public class TestWebHdfsFileSystemContract extends FileSystemContractBaseTest {
   private static final Configuration conf = new Configuration();
   private static final MiniDFSCluster cluster;
   private String defaultWorkingDirectory;
-  
+
   private UserGroupInformation ugi;
 
   static {
@@ -96,9 +96,9 @@ public class TestWebHdfsFileSystemContract extends FileSystemContractBaseTest {
     assertFalse(fs.exists(testDir));
     assertTrue(fs.mkdirs(testDir));
     assertTrue(fs.exists(testDir));
-    
+
     createFile(path("/test/hadoop/file"));
-    
+
     Path testSubDir = path("/test/hadoop/file/subdir");
     try {
       fs.mkdirs(testSubDir);
@@ -110,8 +110,8 @@ public class TestWebHdfsFileSystemContract extends FileSystemContractBaseTest {
       assertFalse(fs.exists(testSubDir));
     } catch(AccessControlException e) {
       // also okay for HDFS.
-    }    
-    
+    }
+
     Path testDeepSubDir = path("/test/hadoop/file/deep/sub/dir");
     try {
       fs.mkdirs(testDeepSubDir);
@@ -123,9 +123,9 @@ public class TestWebHdfsFileSystemContract extends FileSystemContractBaseTest {
       assertFalse(fs.exists(testDeepSubDir));
     } catch(AccessControlException e) {
       // also okay for HDFS.
-    }    
+    }
   }
-  
+
   //the following are new tests (i.e. not over-riding the super class methods)
 
   public void testGetFileBlockLocations() throws IOException {
@@ -180,7 +180,7 @@ public class TestWebHdfsFileSystemContract extends FileSystemContractBaseTest {
 
   public void testOpenNonExistFile() throws IOException {
     final Path p = new Path("/test/testOpenNonExistFile");
-    //open it as a file, should get FileNotFoundException 
+    //open it as a file, should get FileNotFoundException
     try {
       fs.open(p);
       fail("Expected FileNotFoundException was not thrown");
@@ -196,7 +196,7 @@ public class TestWebHdfsFileSystemContract extends FileSystemContractBaseTest {
     { //test zero file size
       final Path zero = new Path(dir, "zero");
       fs.create(zero).close();
-      
+
       int count = 0;
       final FSDataInputStream in = fs.open(zero);
       for(; in.read() != -1; count++);
@@ -216,17 +216,17 @@ public class TestWebHdfsFileSystemContract extends FileSystemContractBaseTest {
     final int two_third = one_third*2;
 
     { //test seek
-      final int offset = one_third; 
+      final int offset = one_third;
       final int len = mydata.length - offset;
       final byte[] buf = new byte[len];
 
       final FSDataInputStream in = fs.open(p);
       in.seek(offset);
-      
+
       //read all remaining data
       in.readFully(buf);
       in.close();
-  
+
       for (int i = 0; i < buf.length; i++) {
         assertEquals("Position " + i + ", offset=" + offset + ", length=" + len,
             mydata[i + offset], buf[i]);
@@ -234,14 +234,14 @@ public class TestWebHdfsFileSystemContract extends FileSystemContractBaseTest {
     }
 
     { //test position read (read the data after the two_third location)
-      final int offset = two_third; 
+      final int offset = two_third;
       final int len = mydata.length - offset;
       final byte[] buf = new byte[len];
 
       final FSDataInputStream in = fs.open(p);
       in.readFully(offset, buf);
       in.close();
-  
+
       for (int i = 0; i < buf.length; i++) {
         assertEquals("Position " + i + ", offset=" + offset + ", length=" + len,
             mydata[i + offset], buf[i]);
@@ -266,7 +266,7 @@ public class TestWebHdfsFileSystemContract extends FileSystemContractBaseTest {
     //delete root
     assertFalse(fs.delete(root, true));
 
-    //create file using root path 
+    //create file using root path
     try {
       final FSDataOutputStream out = fs.create(root);
       out.write(1);
@@ -276,7 +276,7 @@ public class TestWebHdfsFileSystemContract extends FileSystemContractBaseTest {
       WebHdfsFileSystem.LOG.info("This is expected.", e);
     }
 
-    //open file using root path 
+    //open file using root path
     try {
       final FSDataInputStream in = fs.open(root);
       in.read();
@@ -428,7 +428,7 @@ public class TestWebHdfsFileSystemContract extends FileSystemContractBaseTest {
       conn.setRequestMethod(op.getType().toString());
       conn.connect();
       assertEquals(HttpServletResponse.SC_OK, conn.getResponseCode());
-      
+
       assertFalse(webhdfs.setReplication(dir, (short)1));
       conn.disconnect();
     }

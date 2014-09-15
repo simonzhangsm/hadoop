@@ -56,7 +56,7 @@ public abstract class AbstractMetric implements MetricsInfo {
    * Get the value of the metric
    * @return the value of the metric
    */
-  public abstract Number value();
+  public abstract Object value();
 
   /**
    * Get the type of the metric

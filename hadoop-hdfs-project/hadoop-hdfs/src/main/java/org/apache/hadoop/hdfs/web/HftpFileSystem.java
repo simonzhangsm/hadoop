@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.TimeZone;
 
+import javax.servlet.http.HttpServletResponse;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
 import org.apache.hadoop.conf.Configuration;
@@ -45,6 +46,7 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.MD5MD5CRC32FileChecksum;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.UnresolvedLinkException;
 import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.hdfs.DFSConfigKeys;
 import org.apache.hadoop.hdfs.DFSUtil;
@@ -96,7 +98,8 @@ public class HftpFileSystem extends FileSystem
 
   public static final String HFTP_TIMEZONE = "UTC";
   public static final String HFTP_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
-
+  public static final String CLIENT_ERROR_FORMAT = "%s: %s expected, received %d";
+  public static final String ERROR_FORMAT = CLIENT_ERROR_FORMAT + " serverMsg=%s";
   protected TokenAspect<? extends HftpFileSystem> tokenAspect;
   private Token<?> delegationToken;
   private Token<?> renewToken;
@@ -368,10 +371,11 @@ public class HftpFileSystem extends FileSystem
 
       //Expects HTTP_OK or HTTP_PARTIAL response codes.
       final int code = conn.getResponseCode();
+      final String serverMsg = conn.getResponseMessage();
       if (offset != 0L && code != HttpURLConnection.HTTP_PARTIAL) {
-        throw new IOException("HTTP_PARTIAL expected, received " + code);
+    	  throw toIOException(code, String.format(ERROR_FORMAT, url.getPath(), "HTTP_PARTIAL", code, serverMsg));
       } else if (offset == 0L && code != HttpURLConnection.HTTP_OK) {
-        throw new IOException("HTTP_OK expected, received " + code);
+    	  throw toIOException(code, String.format(ERROR_FORMAT, url.getPath(), "HTTP_OK", code, serverMsg));
       }
       return conn;
     }
@@ -729,4 +733,25 @@ public class HftpFileSystem extends FileSystem
       throw new IOException(e);
     }
   }
+
+  private static IOException toIOException(int httpErrorCode, String failureMsg) {
+      switch (httpErrorCode) {
+        case HttpServletResponse.SC_FORBIDDEN:
+        case HttpServletResponse.SC_UNAUTHORIZED:
+          throw new SecurityException(failureMsg); // throw unchecked
+        case HttpServletResponse.SC_NOT_FOUND:
+          return new FileNotFoundException(failureMsg);
+        case HttpServletResponse.SC_GONE:
+          return new UnresolvedLinkException(failureMsg);
+        case HttpServletResponse.SC_SERVICE_UNAVAILABLE:
+          throw new UnsupportedOperationException(failureMsg); // throw unchecked
+        case HttpServletResponse.SC_BAD_REQUEST:
+          throw new IllegalArgumentException(failureMsg); // throw unchecked
+        case HttpServletResponse.SC_REQUEST_TIMEOUT:
+          return new RemoteException(InterruptedException.class.getName(),
+            failureMsg);
+        default:
+          return new IOException(failureMsg);
+       }
+     }
 }

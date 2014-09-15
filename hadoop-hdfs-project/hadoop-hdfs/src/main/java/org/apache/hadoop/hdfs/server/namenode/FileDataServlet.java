@@ -45,7 +45,7 @@ public class FileDataServlet extends DfsServlet {
   private static final long serialVersionUID = 1L;
 
   /** Create a redirection URL */
-  private URL createRedirectURL(String path, String encodedPath, HdfsFileStatus status, 
+  private URL createRedirectURL(String path, String encodedPath, HdfsFileStatus status,
       UserGroupInformation ugi, ClientProtocol nnproxy, HttpServletRequest request, String dt)
       throws IOException {
     String scheme = request.getScheme();
@@ -74,7 +74,7 @@ public class FileDataServlet extends DfsServlet {
         getServletContext());
     String addr = nn.getNameNodeAddressHostPortString();
     String addrParam = JspHelper.getUrlParam(JspHelper.NAMENODE_ADDRESS, addr);
-    
+
     return new URL(scheme, hostname, port,
         "/streamFile" + encodedPath + '?' +
         "ugi=" + ServletUtil.encodeQueryValue(ugi.getShortUserName()) +
@@ -84,7 +84,7 @@ public class FileDataServlet extends DfsServlet {
   /** Select a datanode to service this request.
    * Currently, this looks at no more than the first five blocks of a file,
    * selecting a datanode randomly from the most represented.
-   * @param conf 
+   * @param conf
    */
   private DatanodeID pickSrcDatanode(LocatedBlocks blks, HdfsFileStatus i,
       Configuration conf) throws IOException {
@@ -110,9 +110,9 @@ public class FileDataServlet extends DfsServlet {
       throws IOException {
     final Configuration conf = NameNodeHttpServer.getConfFromContext(
         getServletContext());
-    final UserGroupInformation ugi = getUGI(request, conf);
 
     try {
+    	final UserGroupInformation ugi = getUGI(request, conf);
       ugi.doAs(new PrivilegedExceptionAction<Void>() {
         @Override
         public Void run() throws IOException {
@@ -127,17 +127,17 @@ public class FileDataServlet extends DfsServlet {
             response.sendRedirect(createRedirectURL(path, encodedPath,
                 info, ugi, nn, request, delegationToken).toString());
           } else if (info == null) {
-            response.sendError(400, "File not found " + path);
+        	  response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found " + path);
           } else {
-            response.sendError(400, path + ": is a directory");
+        	  response.sendError(HttpServletResponse.SC_BAD_REQUEST, path + ": is a directory");
           }
           return null;
         }
       });
     } catch (IOException e) {
-      response.sendError(400, e.getMessage());
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
     } catch (InterruptedException e) {
-      response.sendError(400, e.getMessage());
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
     }
   }
 

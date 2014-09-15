@@ -1,0 +1,3 @@
+hadoop ok
+hadoop fail
+hadoop 2.4

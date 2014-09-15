@@ -84,7 +84,7 @@ public class MetricsCache {
      * @param key name of the metric
      * @return the metric value
      */
-    public Number getMetric(String key) {
+    public Object getMetric(String key) {
       AbstractMetric metric = metrics.get(key);
       return metric != null ? metric.value() : null;
     }
@@ -110,8 +110,8 @@ public class MetricsCache {
      * @return entry set of metrics
      */
     @Deprecated
-    public Set<Map.Entry<String, Number>> metrics() {
-      Map<String, Number> map = new LinkedHashMap<String, Number>(
+    public Set<Map.Entry<String, Object>> metrics() {
+      Map<String, Object> map = new LinkedHashMap<String, Object>(
           metrics.size());
       for (Map.Entry<String, AbstractMetric> mapEntry : metrics.entrySet()) {
         map.put(mapEntry.getKey(), mapEntry.getValue().value());

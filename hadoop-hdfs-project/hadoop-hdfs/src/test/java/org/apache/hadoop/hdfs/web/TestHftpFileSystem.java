@@ -18,11 +18,14 @@
 
 package org.apache.hadoop.hdfs.web;
 
+import org.apache.hadoop.fs.FileChecksum;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -44,6 +47,7 @@ import org.apache.hadoop.hdfs.MiniDFSCluster;
 import org.apache.hadoop.hdfs.server.datanode.DataNode;
 import org.apache.hadoop.hdfs.server.datanode.DataNodeTestUtils;
 import org.apache.hadoop.hdfs.server.protocol.DatanodeRegistration;
+import org.apache.hadoop.ipc.RemoteException;
 import org.apache.hadoop.security.ssl.KeyStoreTestUtil;
 import org.apache.hadoop.util.ServletUtil;
 import org.junit.After;
@@ -424,5 +428,39 @@ public class TestHftpFileSystem {
 
     assertEquals(uri, fs.getUri());
     assertEquals("127.0.0.1:789", fs.getCanonicalServiceName());
+  }
+
+
+  @Test
+  public void testFileNotFound() {
+    final Path missingPath = new Path("/missing");
+    FSDataInputStream fsdis = null;
+    try {
+      fsdis = hftpFs.open(missingPath);
+    } catch (IOException e) {
+      assertTrue(FileNotFoundException.class + " expected, was " + e,
+          e instanceof FileNotFoundException);
+    }
+    assertNull("Open should fail!", fsdis);
+    FileChecksum fc = null;
+    try {
+      fc = hftpFs.getFileChecksum(missingPath);
+    } catch (IOException e) {
+      // SAX wraps into RemoteException
+      if (e instanceof RemoteException) {
+        e = ((RemoteException)e).unwrapRemoteException();
+      }
+      assertTrue(FileNotFoundException.class + " expected, was " + e,
+          e instanceof FileNotFoundException);
+    }
+    assertNull("getFileChecksum should fail!", fc);
+    FileStatus fs = null;
+    try {
+      fs = hftpFs.getFileStatus(missingPath);
+    } catch (IOException e) {
+      assertTrue(FileNotFoundException.class + " expected, was " + e,
+          e instanceof FileNotFoundException);
+    }
+    assertNull("getFileStatus should fail!", fs);
   }
 }

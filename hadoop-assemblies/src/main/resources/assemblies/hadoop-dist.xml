@@ -69,6 +69,14 @@
       <fileMode>0755</fileMode>
     </fileSet>
     <fileSet>
+      <directory>${basedir}/src/main/example</directory>
+      <outputDirectory>/share/example</outputDirectory>
+      <includes>
+        <include>*</include>
+      </includes>
+      <fileMode>0755</fileMode>
+    </fileSet>
+    <fileSet>
       <directory>${basedir}</directory>
       <outputDirectory>/share/doc/hadoop/${hadoop.component}</outputDirectory>
       <includes>
